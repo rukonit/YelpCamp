@@ -4,9 +4,14 @@ const mongoose = require('mongoose');
 const path = require('path');
 const Campground = require('./models/camground');
 const methodOverride = require('method-override');
+const morgan = require('morgan');
+const ejsMate = require('ejs-mate');
 
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
+app.use(morgan('tiny'));
+
+app.engine('ejs', ejsMate);
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {useNewUrlParser: true,
 useUnifiedTopology: true
@@ -22,8 +27,9 @@ db.once("once", () => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
+
 app.get('/', (req, res)=> {
-    res.render('home')
+    res.redirect('/campgrounds')
 })
 
 app.get('/campgrounds', async(req, res) => {
