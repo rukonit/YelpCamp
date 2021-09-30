@@ -7,34 +7,55 @@
     <div class="row">
         <h1 class="text-center">New Campground</h1>
         <div class="col-6 offset-3">
-            <form class="mb-3" action="/campgrounds" method="POST">
+            <form class="mb-3 validated-form" action="/campgrounds" method="POST" novalidate>
                 <div class="form-group">
                     <label class="form-label" for="title">Title</label>
-                    <input class="form-control" type="text" id="title" placeholder="" name="campground[title]">
+                    <input class="form-control" type="text" id="title" placeholder="" name="campground[title]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                      </div>
                 </div>
+                
                 <div class="form-group mb-2">
                     <label class="form-label" for="location">Location</label>
-                    <input class="form-control" type="text" id="location" placeholder="" name="campground[location]">
+                    <input class="form-control" type="text" id="location" placeholder="" name="campground[location]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                      </div>
                 </div>
+             
                 <div class="form-group mb-2">
                     <label class="form-label" for="image">Image</label>
-                    <input class="form-control" type="text" id="image" placeholder="" name="campground[image]">
+                    <input class="form-control" type="text" id="image" placeholder="" name="campground[image]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                      </div>
                 </div>
+             
                 <div class="mb-3">
                     <label class="form-label" for="price">Price</label>
                 <div class="input-group">
                    
                     <span class="input-group-text" id="price-label">$</span>
-                    <input type="text" class="form-control" id="price" name="campground[price]" aria-label="Amount (to the nearest dollar)">
+                    <input type="text" class="form-control" id="price" name="campground[price]" aria-label="Amount (to the nearest dollar)" required>
                     <span class="input-group-text">.00</span>
-                  </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                      </div>
+                
+                </div>
+                
                 </div>
                 <div class="form-group mb-2">
                     <label class="form-label" for="description">Description</label>
-                    <textarea class="form-control" type="text" id="description" placeholder="" name="campground[description]"></textarea>
+                    <textarea class="form-control" type="text" id="description" placeholder="" name="campground[description]" required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                      </div>
                 </div>
                 <button class="btn btn-success">Add Campground</button>
             </form>
             <a href="/campgrounds">All Campgrounds</a>
         </div>
     </div>
+
