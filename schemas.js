@@ -1,3 +1,4 @@
+const { number } = require('joi');
 const joi = require('joi')
 
 module.exports.campgroundSchema =  joi.object({
@@ -10,3 +11,10 @@ module.exports.campgroundSchema =  joi.object({
 
     }).required()
 });
+
+module.exports.reviewsSchema = joi.object({
+    review: joi.object({
+        rating: joi.number().required().min(1).max(5),
+        body: joi.string().required()
+    }).required()
+})
