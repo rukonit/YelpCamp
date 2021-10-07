@@ -2,19 +2,36 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const path = require('path');
-const Campground = require('./models/camground');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const AppError = require('./utils/AppError');
-const catchAsync = require('./utils/catchAsynch');
-const {campgroundSchema, reviewsSchema} = require('./schemas.js')
-const Review = require('./models/review')
-const campgroundRoutes = require('./routes/campgrounds')
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(flash())
+
+const sessionConfig = {secret: 'yelpcamp', 
+                        resave: false, 
+                        saveUninitialized: true,
+                        cookie: {
+                            httpOnly: true,
+                            expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+                            maxAge: 1000 * 60 * 60 * 24 * 7
+                        }
+                }
+app.use(session(sessionConfig))
+app.use((req, res, next)=> {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 app.engine('ejs', ejsMate);
 
@@ -34,39 +51,15 @@ app.set('views', path.join(__dirname, 'views'))
 
 
 
-const validateReview = (req, res, next) => {
-    const {error} = reviewsSchema.validate(req.body)
 
-    if(error){
-        const msg = error.details.map(el => el.message.join(","))
-        throw new AppError(msg, 400)
-    }
-    else {
-        next();
-    }
-
-}
 
 app.use("/campgrounds", campgroundRoutes)
 
+app.use("/campgrounds/:id/reviews", reviewRoutes)
+
 //Review Section
 
-app.post('/campgrounds/:id/reviews', validateReview, catchAsync (async(req, res)=>{
-    const campground = await Campground.findById(req.params.id);
-    const review = new Review(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`)
 
-}))
-
-app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async(req, res)=> {
-    const {id, reviewId} = req.params;
-    await Campground.findByIdAndUpdate(id, {$pull: {reviews: reviewId}})
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/campgrounds/${id}`);
-}))
 
 //Middlewares
 
