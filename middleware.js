@@ -31,9 +31,10 @@ module.exports.validateCampground = (req, res, next) => {
 
 module.exports.isAuthor = async(req, res, next) => {
     const { id } = req.params;
+
     const campground = await Campground.findById(id);
-    if (!campground.author.equals(req.user_id)) {
-        req.flash('error', 'No such campground!');
+    if (!campground.author.equals(req.user._id)) {
+        req.flash('error', 'You are not authorized to edit this page');
         return res.redirect(`/campgrounds`)
    }
    next();

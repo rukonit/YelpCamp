@@ -36,6 +36,7 @@ module.exports.showCampground = async(req, res, next) => {
 
 module.exports.renderEditForm = async(req, res) => {
     const {id} = req.params;
+
     const campground = await Campground.findById(id);
     if (!campground.author.equals(req.user._id)) {
         req.flash('error', 'You are not the author of this blog');
@@ -47,17 +48,17 @@ module.exports.renderEditForm = async(req, res) => {
 module.exports.renderUpdateCampground = async(req, res) => {
     const { id } = req.params;
 
-    const updatedCampground =  await Campground.findByIdAndUpdate(id, {...req.body.campground}, {new: true})
+    const campground =  await Campground.findByIdAndUpdate(id, {...req.body.campground}, {new: true})
   
-    // const images = req.files.map(f =>
-    //     ({url: f.path, filename: f.filename})
-    //     )
-    // updatedCampground.images.push(...images)
-    // await updatedCampground.save()
+    const images = req.files.map(f =>
+        ({url: f.path, filename: f.filename})
+        )
+    campground.images.push(...images)
+    await campground.save()
     
   
     
-    res.render('campgrounds/show', {updatedCampground})
+    res.render('campgrounds/show', {campground})
 }
 
 module.exports.deleteCampground =async(req, res) => {
