@@ -10,10 +10,12 @@ module.exports.newForm = async (req, res) => {
 }
 
 module.exports.createCampground = async(req, res) => {
-
-   
+    
     const campground = new Campground(req.body.campground);
     campground.author = req.user._id;
+    campground.images = req.files.map(f =>
+        ({url: f.path, filename: f.filename})
+        )
     await campground.save();
     req.flash('success', "Successfully made a new campground");
     res.redirect(`/campgrounds/${campground._id}`)
@@ -43,15 +45,16 @@ module.exports.renderEditForm = async(req, res) => {
 }
 
 module.exports.renderUpdateCampground = async(req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
 
-    
-    if (!campground.author.equals(req.user._id)) {
-         req.flash('error', 'You are not the authorized to edit this blog');
-         return res.redirect(`/campgrounds/${id}`)
-    }
     const updatedCampground =  await Campground.findByIdAndUpdate(id, {...req.body.campground}, {new: true})
   
+    // const images = req.files.map(f =>
+    //     ({url: f.path, filename: f.filename})
+    //     )
+    // updatedCampground.images.push(...images)
+    // await updatedCampground.save()
+    
   
     
     res.render('campgrounds/show', {updatedCampground})
