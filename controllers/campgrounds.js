@@ -1,4 +1,10 @@
 const Campground = require('../models/camground');
+const { cloudinary } = require("../claudinary")
+const mapbox = require('mapbox');
+
+const geoCoder = new mapbox(process.env.MAPBOX_TOKEN)
+
+
 module.exports.index = async(req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', {campgrounds})
@@ -10,13 +16,21 @@ module.exports.newForm = async (req, res) => {
 }
 
 module.exports.createCampground = async(req, res) => {
+    const geoCode = await geoCoder.geocodeForward(req.body.campground.location, (err, data, res)=> {
+        return data
+       
+})
+
+
     
     const campground = new Campground(req.body.campground);
+    campground.geometry = geoCode.entity.features[0].geometry;
     campground.author = req.user._id;
     campground.images = req.files.map(f =>
         ({url: f.path, filename: f.filename})
         )
     await campground.save();
+    console.log(campground);
     req.flash('success', "Successfully made a new campground");
     res.redirect(`/campgrounds/${campground._id}`)
 }
@@ -56,8 +70,12 @@ module.exports.renderUpdateCampground = async(req, res) => {
     campground.images.push(...images)
     await campground.save()
     
-  
-    
+    if(req.body.deleteImages) {
+    for(let filenae of req.body.deleteImages) {
+        await cloudinary.uploader.destroy(filenae)
+    }
+    await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}})
+    }
     res.render('campgrounds/show', {campground})
 }
 

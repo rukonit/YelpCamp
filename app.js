@@ -19,6 +19,7 @@ const LocalStrategy = require('passport-local')
 const User = require('./models/user')
 const userRoutes = require('./routes/users')
 
+
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
