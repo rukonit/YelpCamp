@@ -1,4 +1,4 @@
-const campground = JSON.parse(campgroundCenter)
+const campground = JSON.parse(campgroundC)
 
 mapboxgl.accessToken =  mapToken;
 const map = new mapboxgl.Map({
