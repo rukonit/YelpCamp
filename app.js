@@ -20,8 +20,9 @@ const User = require('./models/user')
 const userRoutes = require('./routes/users')
 const sanitize = require('express-mongo-sanitize');
 const helmet = require('helmet')
-const MongoStore = require('connect-mongo')(session);
-// const dbUrl = process.env.DB_URL;
+const MongoDBStore = require('connect-mongo');
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const secret = process.env.SECRET || 'simplesecret'
 
 
 app.use(express.urlencoded({extended: true}));
@@ -75,12 +76,16 @@ app.use(helmet({contentSecurityPolicy: false}));
 //     })
 // );
 
-const store = new MongoStore({
-    url: 'mongodb://localhost:27017/yelp-camp',
-    secret: 'yelpcamp'
-})
+// const store = new MongoDBStore({
+//     url: dbUrl,
+//     secret: 'yelpcamp',
+//     touchAfter: 24 * 60 * 60
+// })
 
-const sessionConfig = {secret: 'yelpcamp', 
+
+
+const sessionConfig = {secret, 
+                        name: 'session',
                         resave: false, 
                         saveUninitialized: true,
                         cookie: {
@@ -88,8 +93,19 @@ const sessionConfig = {secret: 'yelpcamp',
                             // secure: true,
                             expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
                             maxAge: 1000 * 60 * 60 * 24 * 7
-                        }
+                        },
+                        store: MongoDBStore.create(
+                            {
+                                mongoUrl: dbUrl,
+                                secret,
+                                touchAfter: 24 * 60 * 60
+                            }
+                        ),
                 }
+                // store.on("error", (e)=> {
+                //     console.log("SESSION STORE ERROR", e)
+                // })
+
 app.use(session(sessionConfig))
 app.use(passport.initialize());
 app.use(passport.session());
@@ -107,7 +123,7 @@ app.use((req, res, next)=> {
 
 app.engine('ejs', ejsMate);
 //'mongodb://localhost:27017/yelp-camp'
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {useNewUrlParser: true,
+mongoose.connect(dbUrl, {useNewUrlParser: true,
 useUnifiedTopology: true
 }
 );
@@ -142,6 +158,7 @@ app.use((err, req, res, next) => {
     res.status(status).render('error', {message})
 })
 
-app.listen(3000, ()=> {
-    console.log("SERVER IS RUNNING ON PORT 3000");
+const port = process.env.PORT || 3000
+app.listen(port, ()=> {
+    console.log(`SERVER IS RUNNING ON PORT ${port}`);
 })
