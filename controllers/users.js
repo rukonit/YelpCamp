@@ -1,13 +1,18 @@
+const User = require('../models/user')
+
 module.exports.renderRegiter = (req, res)=> {
     res.render('users/register')
 }
 
 module.exports.register = async (req, res)=> {
-    try {    const {email, username, password} = req.body;
+   
+    try {    
+    const {email, username, password} = req.body;
     const user = new User({email, username})
     const newUser = await User.register(user, password);
     req.login(newUser,  err => {
         if(err) {
+           
             return next(err);
         }
     })
