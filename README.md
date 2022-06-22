@@ -1,4 +1,4 @@
-# React Food Order SPA
+# Yelp Camp
 
 This react project is a simple demonstraton of a campgrounds location management with NodeJS, MongoDB and Passport.
 
