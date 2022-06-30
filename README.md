@@ -1,6 +1,6 @@
 # Yelp Camp
 
-This react project is a simple demonstraton of a campgrounds location management with NodeJS, MongoDB and Passport.
+This full stack web project is a simple demonstraton of a campgrounds location management with NodeJS, MongoDB and Passport.
 
 
 ### How to Run
